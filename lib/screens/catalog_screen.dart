@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+
+class CatalogScreen extends StatelessWidget {
+  final Map<String, List<Map<String, dynamic>>> categories = {
+    'Молоко': [
+      {'name': 'Молоко 3.2%', 'price': '89 ₽', 'oldPrice': '99 ₽', 'image': 'assets/images/milk_3.2.png'},
+      {'name': 'Молоко 2.5%', 'price': '85 ₽', 'oldPrice': null, 'image': 'assets/images/milk_2.5.png'},
+      {'name': 'Молоко 1.5%', 'price': '80 ₽', 'oldPrice': '90 ₽', 'image': 'assets/images/milk_1.5.png'},
+    ],
+    'Хлеб': [
+      {'name': 'Хлеб белый', 'price': '45 ₽', 'oldPrice': null, 'image': 'assets/images/bread_white.png'},
+      {'name': 'Хлеб ржаной', 'price': '55 ₽', 'oldPrice': '65 ₽', 'image': 'assets/images/bread_rye.png'},
+      {'name': 'Багет', 'price': '60 ₽', 'oldPrice': null, 'image': 'assets/images/baguette.png'},
+    ],
+    'Фрукты': [
+      {'name': 'Яблоки сезонные', 'price': '129 ₽', 'oldPrice': '149 ₽', 'image': 'assets/images/apples.png'},
+      {'name': 'Бананы', 'price': '99 ₽', 'oldPrice': null, 'image': 'assets/images/bananas.png'},
+    ],
+    'Мясо': [
+      {'name': 'Куриное филе', 'price': '299 ₽', 'oldPrice': null, 'image': 'assets/images/chicken.png'},
+      {'name': 'Свинина', 'price': '350 ₽', 'oldPrice': '400 ₽', 'image': 'assets/images/pork.png'},
+    ],
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: categories.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Каталог'),
+          backgroundColor: Color(0xFF00A1D6),
+          elevation: 0,
+          bottom: TabBar(
+            isScrollable: true,
+            labelColor: Color(0xFFFFFFFF),
+            unselectedLabelColor: Color(0xFFB0E0F6),
+            indicatorColor: Color(0xFFFFFFFF),
+            tabs: categories.keys.map((category) => Tab(text: category)).toList(),
+          ),
+        ),
+        body: TabBarView(
+          children: categories.entries.map((entry) {
+            final products = entry.value;
+            return ListView.builder(
+              padding: EdgeInsets.all(16),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return Card(
+                  margin: EdgeInsets.only(bottom: 8), // Отступ снизу
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Изображение продукта
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Image.asset(
+                            product['image'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Color(0xFFE0E0E0), // Заглушка, если изображения нет
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        // Название и цена
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product['name'],
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    product['price'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xFF00A1D6),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (product['oldPrice'] != null) ...[
+                                    SizedBox(width: 8),
+                                    Text(
+                                      product['oldPrice'],
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Кнопка "В корзину"
+                        ElevatedButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('${product['name']} добавлен в корзину')),
+                            );
+                          },
+                          child: Text('В корзину'),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(100, 36),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
