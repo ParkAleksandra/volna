@@ -1,20 +1,22 @@
 name: volna
 description: A new Flutter project.
-publish_to: 'none' # Убедись, что это 'none', если не публикуешь в pub.dev
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.0 <3.0.0' # Версия SDK может отличаться, оставь ту, что была
+  sdk: '>=2.19.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts: ^6.1.0 # Для шрифта Roboto, как в твоём приложении
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.10+1
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0 # Для проверки кода
+  flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
@@ -28,4 +30,6 @@ flutter:
     - assets/images/apples.png
     - assets/images/bananas.png
     - assets/images/chicken.png
-    - assets/images/pork.png  
+    - assets/images/pork.png
+    - assets/logo.svg
+    - assets/title.svg

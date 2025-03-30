@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'cart_screen.dart';
 
-class CatalogScreen extends StatelessWidget {
+class CatalogScreen extends StatefulWidget {
+  @override
+  _CatalogScreenState createState() => _CatalogScreenState();
+}
+
+class _CatalogScreenState extends State<CatalogScreen> {
   final Map<String, List<Map<String, dynamic>>> categories = {
     'Молоко': [
       {'name': 'Молоко 3.2%', 'price': '89 ₽', 'oldPrice': '99 ₽', 'image': 'assets/images/milk_3.2.png'},
@@ -22,15 +28,71 @@ class CatalogScreen extends StatelessWidget {
     ],
   };
 
+  List<Map<String, dynamic>> cartItems = [];
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: categories.length,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Каталог'),
           backgroundColor: Color(0xFF00A1D6),
           elevation: 0,
+          title: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              'Каталог',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          actions: [
+            Stack(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.shopping_cart),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems)),
+                    );
+                  },
+                ),
+                if (cartItems.isNotEmpty)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${cartItems.length}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
           bottom: TabBar(
             isScrollable: true,
             labelColor: Color(0xFFFFFFFF),
@@ -48,7 +110,7 @@ class CatalogScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final product = products[index];
                 return Card(
-                  margin: EdgeInsets.only(bottom: 8), // Отступ снизу
+                  margin: EdgeInsets.only(bottom: 8), // Исправлено на "bottom"
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -57,7 +119,6 @@ class CatalogScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Изображение продукта
                         Container(
                           width: 80,
                           height: 80,
@@ -68,14 +129,11 @@ class CatalogScreen extends StatelessWidget {
                             product['image'],
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Color(0xFFE0E0E0), // Заглушка, если изображения нет
-                              );
+                              return Container(color: Color(0xFFE0E0E0));
                             },
                           ),
                         ),
                         SizedBox(width: 12),
-                        // Название и цена
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,8 +150,7 @@ class CatalogScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xFF00A1D6),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                      fontWeight: FontWeight.bold),
                                   ),
                                   if (product['oldPrice'] != null) ...[
                                     SizedBox(width: 8),
@@ -111,9 +168,11 @@ class CatalogScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // Кнопка "В корзину"
                         ElevatedButton(
                           onPressed: () {
+                            setState(() {
+                              cartItems.add(Map.from(product));
+                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('${product['name']} добавлен в корзину')),
                             );
